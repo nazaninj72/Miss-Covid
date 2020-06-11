@@ -11,11 +11,11 @@ BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
 STOPWORDS = set(stopwords.words('english'))
 col_list = ['user_id', 'Tweet','hashtag','url']
 # df = pd.read_csv("samplenews.csv", usecols=col_list)
-df = pd.read_csv("rawtweets.csv", usecols=col_list)
-urls=[url for url in df['url'] if not pd.isnull(url)]
-import json,sys,csv
-mycsv = csv.writer(open('fullnews.csv', 'w'))
-mycsv.writerow(['doc', 'Content','url','keywords','summary'])
+# df = pd.read_csv("rawtweets.csv", usecols=col_list)
+# urls=[url for url in df['url'] if not pd.isnull(url)]
+# import json,sys,csv
+# mycsv = csv.writer(open('fullnews.csv', 'w'))
+# mycsv.writerow(['doc', 'Content','url','keywords','summary'])
 
 def preprocess(text):
     text = text.lower()# lowercase text
@@ -27,27 +27,29 @@ def preprocess(text):
 
 
 
-topic=""
-title=""
-content=""
-for url in urls:
+# 
+# for url in urls:
+def scrapeurl(url):
+    topic=""
+    title=""
+    content=""
     article = Article(url)
     try:
         article.download()
         article.html
         article.parse()
         title=preprocess(article.title)
-        if len(article.text)<=200:
-            continue
-        else:
+        if len(article.text)>=200:
             content=preprocess(article.text)
             article.nlp()
             keywords=article.keywords
             summary=preprocess(article.summary)
+            
     #         article2 = article.text.split()
-            mycsv.writerow([title, content,url,keywords,summary])
+            # mycsv.writerow([title, content,url,keywords,summary])
     except:
         print('***FAILED TO DOWNLOAD***', article.url)
-        continue
+    return content,keywords,summary
     
-   
+    
+ 
