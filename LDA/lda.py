@@ -16,7 +16,7 @@ def getdata(file):
 def train_lda():
     NUM_TOPICS = 10
     num_words=5
-    filename="/home/nazaninjafar/ds4cg2020/data_preprocess/news.csv"
+    filename="../data/news.csv"
 
     df = getdata(filename)
     corpuses=[corpus for corpus in df['summary'] if not pd.isnull(corpus)]
