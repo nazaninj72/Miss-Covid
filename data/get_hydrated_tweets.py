@@ -7,20 +7,21 @@ from os.path import isfile, join
 from os import walk
 import sys
 #path to the cloned repository : https://github.com/echen102/COVID-19-TweetIDs
-dataPath="/home/nazaninjafar/ds4cg2020/COVID-19-TweetIDs"
+dataPath="COVID-19-TweetIDs"
+mainpath="/home/nazaninjafar/ds4cg2020/"
 def hydrate(files,api_key):
     consumer_key=api_key['consumer_key']
     consumer_secret=api_key['consumer_secret']
     access_token=api_key['access_token']
     access_token_secret=api_key['access_token_secret']
     t = Twarc(consumer_key, consumer_secret, access_token, access_token_secret)
-    file1 = open('/home/nazaninjafar/ds4cg2020/data/flutids.txt', 'w')
+    file1 = open(mainpath+'data/flutids.txt', 'w')
     keywords = ('flu', 'common flu', 'covid19 flu', 'coronavirus common flu')
     records=[]
     hashtags=[""]
     for tweetIDs in files:
         
-        for tweet in t.hydrate(open(dataPath+"/"+tweetIDs)):
+        for tweet in t.hydrate(open(mainpath+dataPath+"/"+tweetIDs)):
             txt=tweet['full_text']
             if (tweet["lang"]=="en") and (not tweet['retweeted'] and 'RT @' not in tweet['full_text']):
                 if any(keyword in tweet["full_text"].lower() for keyword in keywords):
@@ -31,7 +32,7 @@ def hydrate(files,api_key):
                     screen_name=tweet['user']['screen_name']
                     if not tweet["entities"]["hashtags"]: 
                         hashtags=[""]
-                    else:)
+                    else:
                         for h in tweet["entities"]["hashtags"]:
                             hashtags.append(h["text"])
                             continue
@@ -46,7 +47,7 @@ def hydrate(files,api_key):
                     favorites=str(tweet['favorite_count'])
                     records.append([screen_name,txt,hashtags,url,retweets,favorites])
     df = pd.DataFrame(records, columns=['screen_name' ,'tweet','hashtag','url','#retweets','#favorites']) 
-    df.to_csv('/home/nazaninjafar/ds4cg2020/data/tweets.csv')  
+    df.to_csv(mainpath+'data/tweets.csv')  
     file1.close()
 
 allfiles=[]
