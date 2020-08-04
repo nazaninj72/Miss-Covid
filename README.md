@@ -9,4 +9,8 @@ In order to retrieve tweets related to specific topic, you should use `get_hydra
 - Replace `dataPath` and `mainpath` to the paths that you cloned "COVID-19-TweetIDs" and this repo.
 - In the function `hydrate()` modify `keywords` to your intended keywords. (Currently it is set to relevant tweets about "flu")
 - Open `keys.json` and add your own Twitter API credentials. 
-- Run `get_hydrated_tweets.py` to start extracting relevant tweets.   
+- Run `get_hydrated_tweets.py` to start extracting relevant tweets.  
+
+# Getting meta data of each user in labeled data:
+To get metadata of each user, you can simply run `get_metadata.py` . 
+
