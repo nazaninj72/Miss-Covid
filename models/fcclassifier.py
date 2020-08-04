@@ -5,11 +5,26 @@ from transformers import BertTokenizer, BertModel
 import torch.nn.functional as F
 from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, roc_curve, auc
-
+from functions import *
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 learningrate=5e-5
 # Create a function to tokenize a set of texts
 import torch.nn.functional as F
+
+
+
+if torch.cuda.is_available():       
+    device = torch.device("cuda")
+    print(f'There are {torch.cuda.device_count()} GPU(s) available.')
+    print('Device name:', torch.cuda.get_device_name(0))
+
+else:
+    print('No GPU available, using the CPU instead.')
+    device = torch.device("cpu")
+
+
+
+
 
 
 def evaluate_roc(probs, y_true):
@@ -113,17 +128,20 @@ def preprocessing_for_bert(data,MAX_LEN=160):
 
 
 
-def initialize_model(epochs=4,lr=learningrate):
+def initialize_model(train_dataloader,epochs=4,lr=learningrate,classifier_type='bert'):
     """Initialize the Bert Classifier, the optimizer and the learning rate scheduler.
     """
-    # Instantiate Bert Classifier
-    bert_classifier = BertClassifier(freeze_bert=False)
-
-    # Tell PyTorch to run the model on GPU
-    bert_classifier.to(device)
+    if classifier_type=='bert':
+        # Instantiate Bert Classifier
+        classifier = BertClassifier(freeze_bert=False)
+        # Tell PyTorch to run the model on GPU
+        classifier.to(device)
+    elif classifier_type == 'bert_metadata':
+        classifier=MergedClassifier()
+        classifier.to(device)
 
     # Create the optimizer
-    optimizer = AdamW(bert_classifier.parameters(),
+    optimizer = AdamW(classifier.parameters(),
                       lr=learningrate,    # Default learning rate
                       eps=1e-8    # Default epsilon value
                       )
@@ -135,13 +153,13 @@ def initialize_model(epochs=4,lr=learningrate):
     scheduler = get_linear_schedule_with_warmup(optimizer,
                                                 num_warmup_steps=0, # Default value
                                                 num_training_steps=total_steps)
-    return bert_classifier, optimizer, scheduler
+    return classifier, optimizer, scheduler
 
 # Create the BertClassfier class
 class BertClassifier(nn.Module):
     """Bert Model for Classification Tasks.
     """
-    def __init__(self, freeze_bert=False):
+    def __init__(self,classifier_type='bert', freeze_bert=False):
         """
         @param    bert: a BertModel object
         @param    classifier: a torch.nn.Module classifier
