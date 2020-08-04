@@ -3,7 +3,139 @@ import torch
 import torch.nn as nn
 from transformers import BertTokenizer, BertModel
 import torch.nn.functional as F
-# model = AutoModel.from_pretrained("digitalepidemiologylab/covid-twitter-bert")
+from transformers import AdamW, get_linear_schedule_with_warmup
+from sklearn.metrics import accuracy_score, roc_curve, auc
+
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+learningrate=5e-5
+# Create a function to tokenize a set of texts
+import torch.nn.functional as F
+
+
+def evaluate_roc(probs, y_true):
+    """
+    - Print AUC and accuracy on the test set
+    - Plot ROC
+    @params    probs (np.array): an array of predicted probabilities with shape (len(y_true), 2)
+    @params    y_true (np.array): an array of the true values with shape (len(y_true),)
+    """
+    preds = probs[:, 1]
+    fpr, tpr, threshold = roc_curve(y_true, preds)
+    roc_auc = auc(fpr, tpr)
+    print(f'AUC: {roc_auc:.4f}')
+       
+    # Get accuracy over the test set
+    y_pred = np.where(preds >= 0.5, 1, 0)
+    accuracy = accuracy_score(y_true, y_pred)
+    print(f'Accuracy: {accuracy*100:.2f}%')
+    
+    # Plot ROC AUC
+    plt.title('Receiver Operating Characteristic')
+    plt.plot(fpr, tpr, 'b', label = 'AUC = %0.2f' % roc_auc)
+    plt.legend(loc = 'lower right')
+    plt.plot([0, 1], [0, 1],'r--')
+    plt.xlim([0, 1])
+    plt.ylim([0, 1])
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.show()
+
+def bert_predict(model, test_dataloader):
+    """Perform a forward pass on the trained BERT model to predict probabilities
+    on the test set.
+    """
+    # Put the model into the evaluation mode. The dropout layers are disabled during
+    # the test time.
+    model.eval()
+
+    all_logits = []
+
+    # For each batch in our test set...
+    for batch in test_dataloader:
+        # Load batch to GPU
+        b_input_ids, b_attn_mask = tuple(t.to(device) for t in batch)[:2]
+
+        # Compute logits
+        with torch.no_grad():
+            logits = model(b_input_ids, b_attn_mask)
+        all_logits.append(logits)
+    
+    # Concatenate logits from each batch
+    all_logits = torch.cat(all_logits, dim=0)
+
+    # Apply softmax to calculate probabilities
+    probs = F.softmax(all_logits, dim=1).cpu().numpy()
+
+    return probs
+
+
+
+def preprocessing_for_bert(data,MAX_LEN=160):
+    """Perform required preprocessing steps for pretrained BERT.
+    @param    data (np.array): Array of texts to be processed.
+    @return   input_ids (torch.Tensor): Tensor of token ids to be fed to a model.
+    @return   attention_masks (torch.Tensor): Tensor of indices specifying which
+                  tokens should be attended to by the model.
+    """
+    # Create empty lists to store outputs
+    input_ids = []
+    attention_masks = []
+
+    # For every sentence...
+    for sent in data:
+        # `encode_plus` will:
+        #    (1) Tokenize the sentence
+        #    (2) Add the `[CLS]` and `[SEP]` token to the start and end
+        #    (3) Truncate/Pad sentence to max length
+        #    (4) Map tokens to their IDs
+        #    (5) Create attention mask
+        #    (6) Return a dictionary of outputs
+        encoded_sent = tokenizer.encode_plus(
+            text=text_preprocessing(sent),  # Preprocess sentence
+            add_special_tokens=True,        # Add `[CLS]` and `[SEP]`
+            max_length=MAX_LEN,                  # Max length to truncate/pad
+            pad_to_max_length=True,         # Pad sentence to max length
+            #return_tensors='pt',           # Return PyTorch tensor
+            return_attention_mask=True,     # Return attention mask
+            truncation=True
+            )
+        
+        # Add the outputs to the lists
+        input_ids.append(encoded_sent.get('input_ids'))
+        attention_masks.append(encoded_sent.get('attention_mask'))
+
+    # Convert lists to tensors
+    input_ids = torch.tensor(input_ids)
+    attention_masks = torch.tensor(attention_masks)
+
+    return input_ids, attention_masks
+
+
+
+
+def initialize_model(epochs=4,lr=learningrate):
+    """Initialize the Bert Classifier, the optimizer and the learning rate scheduler.
+    """
+    # Instantiate Bert Classifier
+    bert_classifier = BertClassifier(freeze_bert=False)
+
+    # Tell PyTorch to run the model on GPU
+    bert_classifier.to(device)
+
+    # Create the optimizer
+    optimizer = AdamW(bert_classifier.parameters(),
+                      lr=learningrate,    # Default learning rate
+                      eps=1e-8    # Default epsilon value
+                      )
+
+    # Total number of training steps
+    total_steps = len(train_dataloader) * epochs
+
+    # Set up the learning rate scheduler
+    scheduler = get_linear_schedule_with_warmup(optimizer,
+                                                num_warmup_steps=0, # Default value
+                                                num_training_steps=total_steps)
+    return bert_classifier, optimizer, scheduler
 
 # Create the BertClassfier class
 class BertClassifier(nn.Module):
