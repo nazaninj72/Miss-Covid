@@ -72,9 +72,10 @@ def get_url(user):
 
 # def get_tweetcounts(user):
 
+path_to_data='../alldata.tsv'
+path_to_metadata='../metadata.tsv'
 
-
-data=pd.read_csv('/home/nazaninjafar/ds4cg2020/bert-covid/data/alldata.tsv')
+data=pd.read_csv(path_to_data)
 ids=data['id'].values.tolist()
 records=[]
 for id in ids:
@@ -106,4 +107,4 @@ for id in ids:
 
 
 df = pd.DataFrame(records, columns=['id','screen_name','description','url','friend_count','follower_count','created','uid','location','verified','fav_count','tweet_count']) 
-df.to_csv('/home/nazaninjafar/ds4cg2020/bert-covid/data/user_metadata.tsv')
+df.to_csv(path_to_metadata)
