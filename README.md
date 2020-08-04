@@ -11,6 +11,6 @@ In order to retrieve tweets related to specific topic, you should use `get_hydra
 - Open `keys.json` and add your own Twitter API credentials. 
 - Run `get_hydrated_tweets.py` to start extracting relevant tweets.  
 
-## Getting meta data of each user in labeled data:
+# Getting meta data of each user in labeled data:
 To get metadata of each user, you can simply run `get_metadata.py` . 
 
