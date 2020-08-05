@@ -14,11 +14,8 @@ import time
 import torch.nn as nn
 from sklearn.metrics import confusion_matrix, classification_report
 from functions import *
-<<<<<<< HEAD
 import argparse
 import torch
-=======
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
 
 # from args import parse_args
 # args = parser.parse_args()
@@ -35,7 +32,13 @@ parser.add_argument('--classifier_type', type=str, default='bert', help='type of
 parser.add_argument('--learningrate', type=float, default=5e-5, help='learning rate [default: 5e-5]')
 # parser.add_argument('-','-max_len', type=int, default=160, help='maximum length of sentences [default: 160]')
 # parser.add_argument('-reply_sample_frequency', type=int, default=1, help='1:without sample')
-
+parser.add_argument(
+        '--model',
+        type=str,
+        default='bert',
+        choices=['bert', 'ct-bert'],
+        help='Type of models [default: bert]'
+    )
 args = parser.parse_args()
 
 
@@ -68,11 +71,7 @@ def set_seed(seed_value=42):
     torch.manual_seed(seed_value)
     torch.cuda.manual_seed_all(seed_value)
 
-<<<<<<< HEAD
 def train(model, train_dataloader, val_dataloader=None, epochs=4,classifier_type='bert',evaluation=False):
-=======
-def train(model, train_dataloader, val_dataloader=None, epochs=4, evaluation=False,classifier_type='bert'):
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
     """Train the BertClassifier model.
     """
     # Start training loop
@@ -176,7 +175,6 @@ def evaluate(model, val_dataloader,classifier_type='bert'):
         # Load batch to GPU
         if classifier_type=='bert': 
             b_input_ids, b_attn_mask, b_labels = tuple(t.to(device) for t in batch)
-<<<<<<< HEAD
 
             # Compute logits
             with torch.no_grad():
@@ -191,22 +189,6 @@ def evaluate(model, val_dataloader,classifier_type='bert'):
                 logits = model(b_input_ids, b_attn_mask,b_md)
 
 
-=======
-
-            # Compute logits
-            with torch.no_grad():
-                logits = model(b_input_ids, b_attn_mask)
-
-        elif classifier_type == 'bert_metadata':
-            b_input_ids, b_attn_mask,b_md, b_labels = tuple(t.to(device) for t in batch)
-            # Perform a forward pass. This will return logits.
-            logits = model(b_input_ids, b_attn_mask,b_md)
-            # Compute logits
-            with torch.no_grad():
-                logits = model(b_input_ids, b_attn_mask,b_md)
-
-
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
         
 
         # Compute loss
@@ -233,41 +215,25 @@ def evaluate(model, val_dataloader,classifier_type='bert'):
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     MAX_LENGTH=160
 
     epochs=args.epoch
     batch_size=args.batch_size
-   
+    model_type=args.model
     learningrate=args.learningrate
     classifier_type = args.classifier_type
-=======
-    # args = parse_args(argv)
-    epochs=20
-    learningrate=5e-5
-    classifier_type = 'bert_metadata'
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
     X = data.tweet.values
     y = data.label.values
     random_state=args.random_seed
 
     indices = np.arange(len(X))
-<<<<<<< HEAD
-    train_idx, val_idx, y_train, y_val= train_test_split(indices, y,stratify = y, test_size=0.1, random_state=random_state)
-=======
-    train_idx, val_idx, y_train, y_val= train_test_split(indices, y,stratify = y, test_size=0.1, random_state=42)
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
+    train_idx, val_idx, y_train, y_val= train_test_split(indices, y,stratify = y, test_size=0.2, random_state=random_state)
     X_train = X[train_idx]
     X_val = X[val_idx]
     
 
-<<<<<<< HEAD
     train_inputs, train_masks = preprocessing_for_bert(X_train,MAX_LENGTH)
     val_inputs, val_masks = preprocessing_for_bert(X_val,MAX_LENGTH)
-=======
-    train_inputs, train_masks = preprocessing_for_bert(X_train,max_length)
-    val_inputs, val_masks = preprocessing_for_bert(X_val,max_length)
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
 
     
 
@@ -303,15 +269,9 @@ if __name__ == "__main__":
 
 
     set_seed(42)    # Set seed for reproducibility
-<<<<<<< HEAD
     ctbert_classifier, optimizer, scheduler = initialize_model(train_dataloader,epochs,learningrate,classifier_type)
     train(ctbert_classifier, train_dataloader, val_dataloader, epochs,classifier_type,evaluation=True)
     val_loss, val_accuracy,y_pred= evaluate(ctbert_classifier, val_dataloader,classifier_type)
-=======
-    ctbert_classifier, optimizer, scheduler = initialize_model(train_dataloader,epochs,learningrate,classifier_type='bert_metadata')
-    train(ctbert_classifier, train_dataloader, val_dataloader, epochs, evaluation=True,classifier_type='bert_metadata')
-    val_loss, val_accuracy,y_pred= evaluate(ctbert_classifier, val_dataloader,classifier_type='bert_metadata')
->>>>>>> 5b1037284257cab134e357c2fbcae24e2b2fb302
     np_preds=[]
     for i in y_pred:
         b=i.cpu().detach().numpy()

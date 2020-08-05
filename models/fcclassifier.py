@@ -128,16 +128,16 @@ def preprocessing_for_bert(data,MAX_LEN=160):
 
 
 
-def initialize_model(train_dataloader,epochs=4,lr=learningrate,classifier_type='bert'):
+def initialize_model(train_dataloader,epochs=4,lr=learningrate,classifier_type='bert',model='bert'):
     """Initialize the Bert Classifier, the optimizer and the learning rate scheduler.
     """
     if classifier_type=='bert':
         # Instantiate Bert Classifier
-        classifier = BertClassifier(freeze_bert=False)
+        classifier = BertClassifier(model,freeze_bert=False)
         # Tell PyTorch to run the model on GPU
         classifier.to(device)
     elif classifier_type == 'bert_metadata':
-        classifier=MergedClassifier()
+        classifier=MergedClassifier(model,classifier_type)
         classifier.to(device)
 
     # Create the optimizer
@@ -159,7 +159,7 @@ def initialize_model(train_dataloader,epochs=4,lr=learningrate,classifier_type='
 class BertClassifier(nn.Module):
     """Bert Model for Classification Tasks.
     """
-    def __init__(self,classifier_type='bert', freeze_bert=False):
+    def __init__(self, model='bert', freeze_bert=False):
         """
         @param    bert: a BertModel object
         @param    classifier: a torch.nn.Module classifier
@@ -167,10 +167,14 @@ class BertClassifier(nn.Module):
         """
         super(BertClassifier, self).__init__()
         # Specify hidden size of BERT, hidden size of our classifier, and number of labels
-        D_in, H, D_out = 768, 50, 2
-
-        # Instantiate BERT model
-        self.bert = BertModel.from_pretrained('bert-base-uncased')
+         if model=='bert':
+            D_in, H, D_out = 768, 50, 2
+            # Instantiate BERT model
+            self.bert = BertModel.from_pretrained('bert-base-uncased')
+        else:
+            D_in, H, D_out = 1024,8, 2
+            # Instantiate BERT model
+            self.bert = AutoModel.from_pretrained("digitalepidemiologylab/covid-twitter-bert")
 
         # Instantiate an one-layer feed-forward classifier
         self.classifier = nn.Sequential(
@@ -224,10 +228,10 @@ class FeatureClassifier(nn.Module):
 
 
 class MergedClassifier(nn.Module):
-    def __init__(self):
+    def __init__(self,f_dim=4,model='bert'):
         super(MergedClassifier, self).__init__()
-        self.BertClassifier = BertClassifier(freeze_bert=False)
-        self.FeatureClassifier = FeatureClassifier(4)
+        self.BertClassifier = BertClassifier(model='bert',freeze_bert=False)
+        self.FeatureClassifier = FeatureClassifier(f_dim)
         self.classifier = nn.Linear(4, 2)
         
     def forward(self, input_ids, attention_mask, x2):
