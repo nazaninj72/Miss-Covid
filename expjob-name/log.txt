@@ -1,0 +1,15 @@
+No GPU available, using the CPU instead.
+No GPU available, using the CPU instead.
+Experiment details:  #epochs 5 batch size 32 learning rate  5e-05 model bert with metadata False
+Start training...
+
+ Epoch  |  Batch  |  Train Loss  | Train Acc   |  Val Loss  |  Val Acc  |  Elapsed 
+----------------------------------------------------------------------
+   1    |   11    |   0.691947   |     -      |     -     |  119.35  
+----------------------------------------------------------------------
+   1    |    -    |   0.691947   |   54.08   |  0.663047  |   56.46   |  151.06  
+----------------------------------------------------------------------
+
+
+ Epoch  |  Batch  |  Train Loss  | Train Acc   |  Val Loss  |  Val Acc  |  Elapsed 
+----------------------------------------------------------------------
