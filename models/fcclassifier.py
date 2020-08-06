@@ -1,12 +1,12 @@
 # %%time
 import torch
 import torch.nn as nn
-from transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel,AutoTokenizer, AutoModel, AdamW, get_linear_schedule_with_warmup
 import torch.nn.functional as F
 from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, roc_curve, auc
 from functions import *
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+
 learningrate=5e-5
 # Create a function to tokenize a set of texts
 import torch.nn.functional as F
@@ -85,13 +85,17 @@ def bert_predict(model, test_dataloader):
 
 
 
-def preprocessing_for_bert(data,MAX_LEN=160):
+def preprocessing_for_bert(data,MAX_LEN=160,model='bert'):
     """Perform required preprocessing steps for pretrained BERT.
     @param    data (np.array): Array of texts to be processed.
     @return   input_ids (torch.Tensor): Tensor of token ids to be fed to a model.
     @return   attention_masks (torch.Tensor): Tensor of indices specifying which
                   tokens should be attended to by the model.
     """
+    if model=='bert':
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained("digitalepidemiologylab/covid-twitter-bert")
     # Create empty lists to store outputs
     input_ids = []
     attention_masks = []
