@@ -240,7 +240,6 @@ if __name__ == "__main__":
     random_state=args.random_seed
 
     indices = np.arange(len(X))
-
     train_idx, val_idx, y_train, y_val= train_test_split(indices, y,stratify = y, test_size=0.2, random_state=random_state)
     X_train = X[train_idx]
     X_val = X[val_idx]
