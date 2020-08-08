@@ -24,24 +24,6 @@ auth.set_access_token(access_token, access_token_secret)
 # calling the api  
 api = tweepy.API(auth,wait_on_rate_limit=True) 
 
-
-def write_friends(foldername,friendslimit):
-    directory = "/home/nazaninjafar/ds4cg2020/data/ppnetwork"+"/"+foldername
-    access_rights = 0o755
-    try:
-        os.mkdir(directory,access_rights)
-        # c = tweepy.Cursor(api.friends, screen_name).items(friendslimit) 
-        with open(directory+"/"+'friends.json', 'w') as f:
-            for friend in tweepy.Cursor(api.friends, screen_name).items(friendslimit): 
-                json.dump(friend._json, f)
-                
-        f.close()
-        print("sucessfully generated friend list for user: "+foldername)
-    except OSError:
-        print ("Creation of the directory %s failed" % directory)
-#     else:
-#         print ("Successfully created the directory %s " % path)
-    # getting all the friends 
     
 def get_friendscount(user):
     return user.friends_count
@@ -72,8 +54,8 @@ def get_url(user):
 
 # def get_tweetcounts(user):
 
-path_to_data='../alldata.tsv'
-path_to_metadata='../metadata.tsv'
+path_to_data='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/topics/health.tsv'
+path_to_metadata='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/topics/health-metadata.tsv'
 
 data=pd.read_csv(path_to_data)
 ids=data['id'].values.tolist()

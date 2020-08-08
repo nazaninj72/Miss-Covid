@@ -42,6 +42,19 @@ parser.add_argument(
         choices=['bert', 'ct-bert'],
         help='Type of models [default: bert]'
     )
+parser.add_argument(
+        '--dataset',
+        type=str,
+        default='flu-claims',
+        choices=['flu-claims', 'topics'],
+        help='Dataset to classify misinformation [default: flu-claims]'
+    )
+parser.add_argument(
+        '--topic',
+        type=str,
+        choices=['politics', 'other','immunity','transmission','health'],
+        help='Topics of misinformation  [choices: politics, other,immunity,transmission,health]'
+    )
 args = parser.parse_args()
 
 
@@ -57,8 +70,7 @@ else:
     print('No GPU available, using the CPU instead.')
     device = torch.device("cpu")
 
-path_to_data='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/alldata.tsv'
-data = pd.read_csv(path_to_data)
+
 # print(args.max_length)
 
 
@@ -234,19 +246,27 @@ if __name__ == "__main__":
     model_type=args.model
     learningrate=args.learningrate
     with_metadata = args.with_metadata
-    print("Experiment details:  #epochs "+str(epochs)+" batch size "+str(batch_size)+" learning rate  "+str(learningrate)+" model "+model_type+" with metadata "+str(with_metadata))
+    dataset = args.dataset
+    topic = args.topic
+    print(topic)
+    if dataset=='flu-claims':
+        path_to_data='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/'+dataset+'.tsv'
+    else:
+        path_to_data='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/'+topic+'.tsv'
+    data = pd.read_csv(path_to_data)
+    print("Experiment details: dataset "+dataset+   " #epochs "+str(epochs)+" batch size "+str(batch_size)+" learning rate  "+str(learningrate)+" model "+model_type+" with metadata "+str(with_metadata))
     X = data.tweet.values
     y = data.label.values
     random_state=args.random_seed
 
     indices = np.arange(len(X))
-    train_idx, val_idx, y_train, y_val= train_test_split(indices, y,stratify = y, test_size=0.2, random_state=random_state)
+    train_idx, val_idx, y_train, y_val= train_test_split(indices, y,stratify = y, test_size=0.1, random_state=random_state)
     X_train = X[train_idx]
     X_val = X[val_idx]
     
 
-    train_inputs, train_masks = preprocessing_for_bert(X_train,MAX_LENGTH)
-    val_inputs, val_masks = preprocessing_for_bert(X_val,MAX_LENGTH)
+    train_inputs, train_masks = preprocessing_for_bert(X_train,MAX_LENGTH,model_type)
+    val_inputs, val_masks = preprocessing_for_bert(X_val,MAX_LENGTH,model_type)
 
     
 
@@ -256,8 +276,15 @@ if __name__ == "__main__":
 
     # Create the DataLoader for our training set
     if with_metadata:
-        # Create the DataLoader for our training set
-        md_X=get_metadata_features()
+        # # Create the DataLoader for our training set
+        # if dataset=='topics':
+        #     path_to_metadata='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/'+topic+'-metadata.tsv'
+        # else:
+        #     path_to_metadata='/home/nazaninjafar/ds4cg2020/UMassDS/DS4CG2020-aucode/data/'+dataset+'-metadata.tsv'
+        # meta_data=pd.read_csv(path_to_metadata)
+        
+        # meta_data=get_metadata(data)
+        md_X=get_metadata_features(data)
         mdX_train = md_X[train_idx]
         mdX_val = md_X[val_idx]
         md_train=torch.tensor(mdX_train).type(torch.FloatTensor)
@@ -284,7 +311,7 @@ if __name__ == "__main__":
         
 
     set_seed(42)    # Set seed for reproducibility
-    ctbert_classifier, optimizer, scheduler = initialize_model(train_dataloader,epochs,learningrate,with_metadata)
+    ctbert_classifier, optimizer, scheduler = initialize_model(train_dataloader,epochs,learningrate,with_metadata,model_type)
     train(ctbert_classifier, train_dataloader, val_dataloader, epochs,with_metadata,evaluation=True)
     val_loss, val_accuracy,y_pred= evaluate(ctbert_classifier, val_dataloader,with_metadata)
     np_preds=[]
