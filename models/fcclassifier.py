@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 from transformers import BertTokenizer, BertModel,AutoTokenizer, AutoModel, AdamW, get_linear_schedule_with_warmup
 import torch.nn.functional as F
-from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, roc_curve, auc
 from functions import *
 
