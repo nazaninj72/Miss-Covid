@@ -132,7 +132,7 @@ def main(k=10):
     
     for tweet in tweets:
         #print('Entered')
-        neighbors = get_neighbors(claims_data, tweet[1], 10)
+        neighbors = get_neighbors(claims_data, tweet[1], k)
         #print(neighbors)
         if len(neighbors) is not 0:
             #print(neighbors)
