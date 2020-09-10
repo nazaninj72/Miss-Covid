@@ -29,6 +29,7 @@ Metadata incorporated model adds 4 features to pretrained bert model on the cont
 - Ratio of number of friends/number of followers
 - Number of tweets
 - Number of liked posts
+
 All the features are normalized. 
 After extracting these features, our previously defined model for pretrained bert gets concatenated with these features after dimension of each of them have been reduced with fully connected network to number of classes (2). 
 Output of these separate fully connected layers are then concatenated for final classification. 
