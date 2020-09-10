@@ -36,14 +36,11 @@ To run each of these models you can follow below instructions:
 Assuming you have access to GPU you can train misinformation classification on our dataset. 
 In this project,we used BERT base and ct-BERT(https://github.com/digitalepidemiologylab/covid-twitter-bert) models to fine tune our dataset. Additionally as explained above we experimented these models with and without metadata features. Therefore to reproduce our results with these options you can use following command line arguments: 
 `MODEL=bert                                  # Choices :[bert,ct-bert]
-
-
 BATCH_SIZE=32
 LR=5e-5
 NUM_EPOCHS=1
 DATASET=flu-claims  #choices: [flu-claims,topics]
 TOPIC=politics #choices: [politics,other,transmission,health,immunity]
-
 python main.py \
   --model $MODEL \
   --batch_size $BATCH_SIZE \
@@ -52,4 +49,5 @@ python main.py \
   --with_metadata #Whether to apply metadata features in experiments \
   --dataset $DATASET if topics are chosen then topic should be specified 
   --topic $TOPIC`
+  
 Please note that if you want to use ct-bert model, you should reduce batch-size to 8. CT-bert model is pretrained on top of bert large uncased with 1024 embedding dimensions. Therefore, running the model on larger batch sizes will return cuda out of memory error.
