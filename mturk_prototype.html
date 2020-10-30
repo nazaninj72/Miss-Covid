@@ -1,0 +1,530 @@
+
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        
+        <title>MTURk</title>
+        <!-- You must include this JavaScript file -->
+        <script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+        <!-- <script src="interaction_log.js"></script> -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <link rel="stylesheet" href="demographic.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+            integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+
+        <style>
+           
+            .demoParent{
+                display:flex;
+                flex-direction:column;
+                justify-content: center;
+                align-items: center;
+                height:90%;
+                width:100%;
+            }
+
+            .demoContainer{
+                height:85%;
+                width:100%;
+                padding-left: 10%;
+                padding-right:10%;
+            }
+
+            .demoInfoBar{
+                display:flex;
+                flex-direction:column;
+                justify-content: center;
+                align-items: flex-start;
+                background-color: #E9ECEF; 
+                /* margin-top: 10px;  */
+                margin-bottom:30px;
+                padding-top:1.5%; 
+                padding-left: 10%;
+                padding-right:10%;
+                border:solid thin #E9ECEF; 
+                /* border-radius:50px; */
+                width:100%;
+                height:20%;
+            }
+
+            .demoFooterButtons{
+                display:flex;
+                flex-direction:row;
+                /* height:7%; */
+                width:100%;
+                margin-top:5%;
+            }
+
+            .demoFooterIcons{
+                display:flex;
+                flex-direction:row;
+                align-items: center;
+                justify-content: center;
+                /* height:3%; */
+                width:100%;
+                margin-top:2%;
+            }
+
+            .demoFooterPrev{
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                height:100%;
+                width:50%;
+            }
+
+            .demoFooterNext{
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                height:100%;
+                width:50%;
+            }
+
+            .btn.btn-primary{
+                /* width:200px; */
+                border: solid thin #f1f1f1;
+                /* border-radius:50px; */
+                background: black;
+                color: #f1f1f1;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+            .btn.btn-primary.navbar-btn{
+                /* width:200px; */
+                border: solid thin black;
+                /* border-radius:50px; */
+                background: black;
+                color: #f1f1f1;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+            .btn.btn-primary:hover {
+                border: solid thin black;
+            }
+
+            .invalidFeedback{
+                color:crimson;
+            }
+
+            #north_american{
+                display: none;
+            }
+
+            #not_north_american{
+                display: none;
+            }
+
+            #live{
+                display: none;
+            }
+
+            #exp{
+                display: none;
+            }
+           
+
+        </style>
+    </head>
+
+    <body>
+
+
+
+        <div class="demoParent" id="demo_parent">
+            <div class="demoInfoBar" id="demo_info_bar">
+               
+                    <h3>COVID-19 claims on Twitter</h3>
+                <p style="font-weight: 500">In this task we want you to answer the following questions as correctly as possible. <br>
+                    
+                <p>
+               
+                
+            </div>
+            <div class="demoContainer" id="demo_container">
+                <crowd-form answer-format="flatten-objects">
+
+                    <div>
+                        <!-- <span style="font-weight: 500"></span> -->
+                        <div>
+                            <div>
+                                <P>
+                                    Given a provided "Tweet" message below please answer given questions. <br>
+                                    In the next 10 tasks we are going to ask questions that are focused on ${topic}. <br>
+                                    Some people believe the virus is originated in the lab and it has been released from a lab intentionally or unintentionally. There are several theories around this topic.<br>
+                                    For instance one of the theories is that virus does not have natural origin and it has been developed in the lab to be used as biological weapon, another theory suggests that the virus was accidentally released from lab and etc. 
+                                    Given above definition for the topic of ${topic} and provided Tweet we want you to answer following questions. 
+                                    <br><b>Important:</b> 
+                                    Before answering each question it is advised to click on the "instructions" button in front of each question to get help and learn about tips to answer questions correctly.
+                                    <br>
+                                <p><strong>Tweet</strong></p>
+        
+                                <!-- Your website URLs will be substituted for the "url" variable when you publish 
+                                    a batch with an input file containing multiple website URLs -->
+                    
+                                    <!-- The text you want classified will be substituted for the "text" variable when you 
+                                        publish a batch with a CSV input file containing multiple text items  -->
+
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">${text}</div>
+                                        </div>
+                                    
+        
+        
+                            </div>
+        
+                            <div id="q1">
+                            <p><strong>1. Is the provided tweet above relevant to the topic of “<b>${topic}</b>”?</strong></p>
+                            <crowd-radio-group>
+                                <crowd-radio-button name="yes-q1" value="yes">Yes </crowd-radio-button><br>
+                                <crowd-radio-button name="no-q1" value="no">No </crowd-radio-button>
+                            </crowd-radio-group>
+                            
+                           
+                            <br>
+                            <button type="button" class="btn btn-info" id="q1-ins-button" onclick="toggle('q1-instructions')">Instructions</button> 
+                            
+                            <div class="panel panel-default" id="q1-instructions">
+                                <p><span>Examples of a <em>relevant</em> tweets to ${topic}:</span>
+                                    <br>
+                                    <em>1. "China intentionally released COVID-19 as a biological weapon. A very well crafted one, highly contagious and highly prone to mutation."</em><br>
+                                    <b>Reason:</b>
+                                    <br>
+                                    The above tweet is clearly claiming that the COVID-19 is <em>man made</em> and has been released for specific purposes. Therefore it is relevant to ${topic}. 
+                                    <br>
+                                    <em>2. "The highly contagious novel coronavirus emerged naturally through mutation"</em><br>
+                                    <b>Reason:</b>
+                                    <br>
+                                    The above tweet also discuss the origin of the virus and claims that virus have natural origin. Therefore it is relevant to ${topic}.
+
+                                    <br>
+                                    <span>Examples of  <em> NOT relevant</em> tweets to ${topic}:</span>
+                                    <br>
+                                    <em>1. "could you kindly publish a chart with details of total covid-19 positive case details such as: 
+                                        nationality,
+                                        location,
+                                        point of entry,
+                                        point of origin,
+                                        occupation,
+                                        reason."
+                                    </em>
+                                    <br>
+                                    <b>Reason:</b>
+                                    <br>
+                                    The above tweet generally requests information about the covid-19 and it does not specifically discuss the ${topic}. Therefore it is not relevant to ${topic}.
+                                    <br>
+
+
+                                    <em>2. "(It was when .. said “Viruses don’t have nationalities. This is racist.” in reply to a tweet by Republican Kevin McCarthy which referred to COVID-19 as “the Chinese coronavirus”. In context, he’s clearly referring to its place of origin, & doesn’t come off as prejudiced.)"
+                                    </em>
+                                    <br>
+                                    <b>Reason:</b>
+                                    <br>
+                                    This tweet is not relevant to ${topic} because it discusses the term that have been used by some politicl parties to call COVID-19 and does not specifically discuss about ${topic}.
+                                    
+                                    
+                                    
+                                    
+                                    <h4>Important:</h4> If the tweet is not relevant to the given topic, for the question 2 choose "Not relevant", for question 3 choose "Other" and then in the opened textbox type "Not relevant" and for question 4 only choose "None" option. 
+                               </p> </div>
+                             
+                            </div id="q1">
+                           
+                            
+        
+                            <div>
+                                <p><strong>2. Overall does the above Tweet support the idea of ${topic_overall_claim}?</strong></p>
+                                <crowd-radio-group>
+                                    <crowd-radio-button name="yes-q2" value="yes" >Yes </crowd-radio-button><br>
+                                    <crowd-radio-button name="no-q2" value="no">No </crowd-radio-button><br>
+                                    <crowd-radio-button name="unsure-q2" value="unsure">Unsure </crowd-radio-button><br>
+                                    <crowd-radio-button name="notrelevant-q2" value="not relevant">Not Relevant </crowd-radio-button>
+                                </crowd-radio-group>
+                                <br>
+                                <button type="button" class="btn btn-info" id="q2-ins-button">Instructions</button>
+                                <div class="panel panel-default" id="q2-instructions">
+                                    <p><span>Examples of tweets that <em>support</em> ${topic_overall_claim}:</span>
+                                        <br>
+                                        <em>"China intentionally released COVID-19 as a biological weapon. A very well crafted one, highly contagious and highly prone to mutation."</em><br>
+                                        <b>Reason:</b>
+                                        <br>
+                                        The above tweet clearly supports the claim that covid-19 is man made and it has been released intentioanlly for specific purposes (e.g., biological weapon). 
+                                        <br>
+                                    <span>Examples of tweets that <em>deny</em> ${topic_overall_claim}:</span>
+                                            <br>   
+                                        <em> "The highly contagious novel coronavirus emerged naturally through mutation"</em><br>
+                                        <b>Reason:</b>
+                                        <br>
+                                        The above tweet claims that the COVID-19 is emerged naturally which is clearly against ${topic_overall_claim}. Therefore it does NOT support ${topic_overall_claim}. 
+    
+                                        <br>
+                                        <span>Examples of tweets that their stance is <em> unclear</em> towards ${topic_overall_claim}:</span>
+                                        <br>
+                                        <em> "Some people believe that COVID-19 is man made while others do not."
+                                        </em>
+                                        <br>
+                                        <b>Reason:</b>
+                                        <br>
+                                        The above tweet does not clearly disucss any stance towards ${topic_overall_claim} instead the author reports about both stances that people have about this topic. 
+                                        Therefore given this tweet message the best answer to this question is "Unsure".
+                                        <br>
+    
+                                        <span>Examples of tweets that are <em>not relevant</em> to ${topic_overall_claim}:</span>
+                                        <em>"(It was when .. said “Viruses don’t have nationalities. This is racist.” in reply to a tweet by Republican Kevin McCarthy which referred to COVID-19 as “the Chinese coronavirus”. In context, he’s clearly referring to its place of origin, & doesn’t come off as prejudiced.)"
+                                        </em>
+                                        <br>
+                                        <b>Reason:</b>
+                                        <br>
+                                        This tweet is not relevant to ${topic} as discussed in the previous question therefore it is also not relevant to the ${topic_overall_claim}.
+                                    </p>    
+                                   
+                                   
+                                </div>
+                                
+                                
+                                
+                            </div>
+        
+                            <div>
+                                <p><strong>3. If the answer for the previous question is “Unsure” please indicate your reason. 
+                                   <br> You can choose from options given below if it applies. </strong></p>
+                                  
+                                    
+                                   <crowd-radio-group>
+                                    <crowd-radio-button name="sarcastic-q3" value="sarcastic" id="sarcastic">The tweet is humorous and/or “sarcastic/satirical” </crowd-radio-button><br>
+                                    <crowd-radio-button name="ambiguous-q3" value="ambiguous" id="ambiguous">The stance of user is ambiguous and not clear.</crowd-radio-button><br>
+                                    <crowd-radio-button name="other-q3" value="other"  id="other-button"  >Other</crowd-radio-button>
+                                    </crowd-radio-group>
+                                    <crowd-input name="other" placeholder="Please specify" id="other-reasons"></crowd-input>
+                                    <br>
+
+                                    <button type="button" class="btn btn-info" id="q3-ins-button">Instructions</button>
+                                    
+                                    <div class="panel panel-default" id="q3-instructions">
+                                        
+                                        <p>
+                                            In some cases even if a tweet supports/denys a specific claim, the intent of the author is exactly opposite of what they convey. This is usually obvious in sarcastic or humours tweets.
+                                            Therefore if you think the tweet does not have a serious tone, it is sarcastic and satirical it is best to choose "The tweet is humorous and/or “sarcastic/satirical”" option. 
+                                            <span>Examples of tweets that the stance of user is <em> ambiguous and not clear</em> towards ${topic_overall_claim}:</span>
+                                            <br>
+                                            <em> "Some people believe that COVID-19 is man made while others do not."
+                                            </em>
+                                            <br>
+                                            <b>Reason:</b>
+                                            <br>
+                                            The above tweet does not clearly disucss any stance towards ${topic_overall_claim} instead the author reports about both stances that people have about this topic. 
+                                            Therefore given this tweet message the best answer to this question is "The stance of user is ambiguous and not clear".
+                                        </p>
+                                    
+                                    </div>
+                                    <br>
+                                
+                            </div>
+                            <div>
+                                <p><strong>4. Please choose the appropriate sentence from right panel that has the most similarity in terms of meaning 
+                                    with the given "Tweet". 
+                                    <br>Remember that you can choose more than one sentence.</strong></p>
+                                <crowd-classifier-multi-select
+                                    name="similarity"
+                                    categories="['The coronavirus was engineered by scientists in a lab.', 'New coronavirus accidentally released from a lab in China.',
+                                     'COVID-19 virus is a biological weapon.',
+                                     'COVID-19 does not have a natural origin.','China intentionally created the COVID-19 virus.',
+                                     'The coronavirus was stolen from a Canadian virus research lab by Chinese scientists.',
+                                     'The new coronavirus evolved naturally and crossed into humans from an animal species.',
+                                     'The coronavirus was not engineered in a lab.',
+                                     'If the virus had been genetically engineered in a lab there would be signs of manipulation in the genome data.',
+                                     'New coronavirus did not accidentally released from lab.',
+                                     'The coronavirus was NOT stolen from a Canadian virus research lab by Chinese scientists.']"
+                                    header="Select the similar sentences to the text"
+                                    exclusion-category="{ text: 'None of the above' }"
+                                    >
+                                    <classification-target>
+                                       ${text}
+                                    </classification-target>
+                                    
+                                    <full-instructions header="Matching with similar sentences">
+                                        <p><span>For example below tweet is most similar to <em><b>'COVID-19 virus is a biological weapon.'</b></em>, <em><b>'COVID-19 does not have a natural origin.'</b></em> and <em><b>'China intentionally created the COVID-19 virus.'</b></em></span>
+                                            <br>
+                                            <h5>Sample Tweet:</h5>
+                                            <em>"China intentionally released COVID-19 as a biological weapon. A very well crafted one, highly contagious and highly prone to mutation."</em><br>
+                                             
+                                            <br>
+                                            Therefore from right panel these three sentences should be chosen.
+                                        
+                                    </full-instructions>
+
+                                    <short-instructions>
+                                        Please Choose the sentence from right panel that has the most similarity in terms of meaning with the given Tweet. To see examples click on "more instructions".
+                                    </short-instructions>
+                                </crowd-classifier-multi-select>
+
+                            </div>
+                            
+
+                            
+        
+                            
+                        </div>
+        
+                        <script>
+
+                        
+                            function validateForm() {
+                                var valid = true;
+                                var radioGroups = document.querySelectorAll("crowd-radio-group");
+                                for (var i = 0; i < radioGroups.length; i++) {
+                                    var validGroup = false;
+                                    var radioButtons = radioGroups[i].children;
+                                    for (var j = 0; j < radioButtons.length; j++) {
+                                        validGroup = validGroup || radioButtons[j].checked;
+                                    }
+                                    valid = valid && validGroup;
+                                }
+                                return valid;
+                            }
+
+                            window.onload = function () { 
+                                var or= document.getElementById('other-reasons');
+                                or.style.display = "none";
+                                var q1= document.getElementById('q1-instructions');
+                                q1.style.display = "none";
+                                var q2= document.getElementById('q2-instructions');
+                                q2.style.display = "none";
+                                var q3= document.getElementById('q3-instructions');
+                                q3.style.display = "none";
+                                document.querySelector('crowd-form').onsubmit = function(e) {
+                                    if (!validateForm()) {
+                                        alert("Please answer all the questions in order to submit.");
+                                        e.preventDefault();
+                                    }
+                                }
+                            //Start with the div visible 
+                            var ex1 = document.getElementById('other-button');
+                            var ex2 = document.getElementById('sarcastic');
+                            var ex3 = document.getElementById('ambiguous');
+                            var x = document.getElementById("myDIV");
+                            var y = document.getElementById("q1-ins-button")
+                            var y2 = document.getElementById("q2-ins-button")
+                            var y3 = document.getElementById("q3-ins-button")
+                            y.onclick=toggle;
+                            y2.onclick=toggle2;
+                            y3.onclick=toggle3;
+                            ex1.onchange = handler;
+                            ex2.onchange = handler;
+                            ex3.onchange = handler;
+
+                        
+
+                        function handler() {
+                            var checkBox = document.getElementById("other-button");
+                            var dv= document.getElementById('other-reasons');
+                            // alert("checked!!")
+                            if (checkBox.checked == true){
+                                
+    
+                                    if (dv.style.display === "none") {
+                                        dv.style.display = "block";
+                                        dv.required = true;
+                                    }
+                                    else {
+                                        dv.style.display = "none";
+                                        dv.required = false;
+                                    }
+                            }
+                            else{
+                                dv.style.display = "none";
+                                dv.required = false;
+                            }
+
+                         
+                        }
+
+                            
+                            // var dv= document.getElementById('other-reasons');
+                            // if (checkBox.checked == true){
+                            //     if (dv.style.visibility === "hidden") {
+                            //         dv.style.visibility = "visible";
+                            //         dv.required = true;
+                            //     }
+                            //     else {
+                            //         dv.style.visibility = "hidden";
+                            //         dv.required = false;
+                            //     }
+                            //     // dv.style.visibility = "visible";
+                            // } else {
+                            //     dv.style.visibility = "hidden";
+                            //     dv.required = false;
+
+                            // }
+
+                            
+                            
+                            
+                        
+                        function toggle(){
+                            var dv= document.getElementById('q1-instructions');
+                            if (dv.style.display == "none") {
+                                dv.style.display = "block";
+                            } else {
+                                dv.style.display = "none";
+                            }
+                        }
+                        function toggle2(){
+                            var dv= document.getElementById('q2-instructions');
+                            if (dv.style.display == "none") {
+                                dv.style.display = "block";
+                            } else {
+                                dv.style.display = "none";
+                            }
+                        }
+                        function toggle3(){
+                            var dv= document.getElementById('q3-instructions');
+                            if (dv.style.display == "none") {
+                                dv.style.display = "block";
+                            } else {
+                                dv.style.display = "none";
+                            }
+                        }
+                            
+                            
+                    } 
+                        </script>
+                    </div>
+                </crowd-form>
+  
+  
+            </div>
+        </div>
+        
+    </body>
+</html>
+
+
+
+
